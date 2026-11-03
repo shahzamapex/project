@@ -21,8 +21,11 @@ class VendorManagementScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +61,11 @@ class VendorManagementScreen extends StatelessWidget {
 
           LayoutBuilder(
             builder: (context, constraints) {
-              int crossCount = constraints.maxWidth > 950 ? 4 : (constraints.maxWidth > 650 ? 2 : 1);
+              int crossCount = constraints.maxWidth > 1150
+                  ? 4
+                  : (constraints.maxWidth > 800
+                      ? 3
+                      : (constraints.maxWidth > 520 ? 2 : 1));
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -66,7 +73,7 @@ class VendorManagementScreen extends StatelessWidget {
                   crossAxisCount: crossCount,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 1.35,
+                  childAspectRatio: 1.45,
                 ),
                 itemCount: vendors.length,
                 itemBuilder: (context, index) {
@@ -84,15 +91,24 @@ class VendorManagementScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppTheme.goldPrimary.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(4),
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.goldPrimary.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  v.category.toUpperCase(),
+                                  style: const TextStyle(color: AppTheme.goldPrimary, fontSize: 9, fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              child: Text(v.category.toUpperCase(), style: const TextStyle(color: AppTheme.goldPrimary, fontSize: 9, fontWeight: FontWeight.bold)),
                             ),
+                            const SizedBox(width: 8),
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(Icons.star, color: AppTheme.goldPrimary, size: 14),
                                 const SizedBox(width: 4),
@@ -104,7 +120,7 @@ class VendorManagementScreen extends StatelessWidget {
                         const SizedBox(height: 12),
                         Text(v.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textLight), maxLines: 1, overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 4),
-                        Text("Contact: ${v.contactPerson}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                        Text("Contact: ${v.contactPerson}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
                         const Spacer(),
                         Row(
                           children: [
@@ -152,33 +168,49 @@ class VendorManagementScreen extends StatelessWidget {
                     final vendor = vendors.firstWhere((v) => v.id == po.vendorId, orElse: () => vendors.first);
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: AppTheme.tealAccent.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Icon(Icons.local_shipping_outlined, color: AppTheme.tealAccent, size: 20),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("PO: ${po.poNumber} • ${vendor.name}", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight)),
-                                const SizedBox(height: 2),
-                                Text("Ordered: ${po.orderDate} • Expected Delivery: ${po.expectedDelivery ?? 'TBD'}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                              ],
-                            ),
-                          ),
-                          Text(currency.format(po.totalAmount), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
-                          const SizedBox(width: 20),
-                          StatusBadge(label: po.status, type: "status"),
-                        ],
+                      child: LayoutBuilder(
+                        builder: (context, poConstraints) {
+                          final poRow = Row(
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.tealAccent.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Icon(Icons.local_shipping_outlined, color: AppTheme.tealAccent, size: 20),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("PO: ${po.poNumber} • ${vendor.name}", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    const SizedBox(height: 2),
+                                    Text("Ordered: ${po.orderDate} • Expected Delivery: ${po.expectedDelivery ?? 'TBD'}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Text(currency.format(po.totalAmount), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
+                              const SizedBox(width: 16),
+                              StatusBadge(label: po.status, type: "status"),
+                            ],
+                          );
+
+                          if (poConstraints.maxWidth < 650) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(minWidth: 650),
+                                child: poRow,
+                              ),
+                            );
+                          }
+                          return poRow;
+                        },
                       ),
                     );
                   },

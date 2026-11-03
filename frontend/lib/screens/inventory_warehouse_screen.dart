@@ -98,8 +98,11 @@ class InventoryWarehouseScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,16 +133,32 @@ class InventoryWarehouseScreen extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Zone Breakdown Cards
-          Row(
-            children: [
-              _zoneSummaryCard("Zone A (Stone & Heavy)", "${inventory.where((i) => i.warehouseZone.contains('Zone A')).length} SKUs", Icons.terrain, AppTheme.tealAccent),
-              const SizedBox(width: 16),
-              _zoneSummaryCard("Zone B (Woodcraft Veneers)", "${inventory.where((i) => i.warehouseZone.contains('Zone B')).length} SKUs", Icons.forest, AppTheme.amberWarning),
-              const SizedBox(width: 16),
-              _zoneSummaryCard("Zone C (Lighting & Fragile)", "${inventory.where((i) => i.warehouseZone.contains('Zone C')).length} SKUs", Icons.lightbulb_outline, AppTheme.goldPrimary),
-              const SizedBox(width: 16),
-              _zoneSummaryCard("Zone D/E (Fabrics & Hardware)", "${inventory.where((i) => i.warehouseZone.contains('Zone D') || i.warehouseZone.contains('Zone E')).length} SKUs", Icons.plumbing, AppTheme.emeraldSuccess),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cards = [
+                _buildZoneCard("Zone A (Stone & Heavy)", "${inventory.where((i) => i.warehouseZone.contains('Zone A')).length} SKUs", Icons.terrain, AppTheme.tealAccent),
+                _buildZoneCard("Zone B (Woodcraft Veneers)", "${inventory.where((i) => i.warehouseZone.contains('Zone B')).length} SKUs", Icons.forest, AppTheme.amberWarning),
+                _buildZoneCard("Zone C (Lighting & Fragile)", "${inventory.where((i) => i.warehouseZone.contains('Zone C')).length} SKUs", Icons.lightbulb_outline, AppTheme.goldPrimary),
+                _buildZoneCard("Zone D/E (Fabrics & Hardware)", "${inventory.where((i) => i.warehouseZone.contains('Zone D') || i.warehouseZone.contains('Zone E')).length} SKUs", Icons.plumbing, AppTheme.emeraldSuccess),
+              ];
+
+              if (constraints.maxWidth < 650) {
+                return Column(
+                  children: cards.map((c) => Padding(padding: const EdgeInsets.only(bottom: 12), child: c)).toList(),
+                );
+              } else if (constraints.maxWidth < 1100) {
+                final halfWidth = (constraints.maxWidth - 16) / 2;
+                return Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: cards.map((c) => SizedBox(width: halfWidth, child: c)).toList(),
+                );
+              } else {
+                return Row(
+                  children: cards.map((c) => Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: c))).toList(),
+                );
+              }
+            },
           ),
 
           const SizedBox(height: 28),
@@ -172,58 +191,73 @@ class InventoryWarehouseScreen extends StatelessWidget {
                     final item = inventory[index];
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: item.status == 'Low Stock' ? AppTheme.roseDanger.withOpacity(0.15) : AppTheme.goldPrimary.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Icon(
-                              item.status == 'Low Stock' ? Icons.warning_amber : Icons.inventory_2_outlined,
-                              color: item.status == 'Low Stock' ? AppTheme.roseDanger : AppTheme.goldPrimary,
-                              size: 18,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(item.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight)),
-                                const SizedBox(height: 2),
-                                Text("SKU: ${item.sku} • Category: ${item.category} • Zone: ${item.warehouseZone}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("${item.quantity} ${item.unit}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: item.status == 'Low Stock' ? AppTheme.roseDanger : AppTheme.textLight)),
-                                Text("Min Threshold: ${item.minThreshold} ${item.unit}", style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
-                              ],
-                            ),
-                          ),
-                          Text(currency.format(item.unitPrice), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
-                          const SizedBox(width: 20),
-                          StatusBadge(label: item.status, type: "status"),
-                          const SizedBox(width: 16),
-                          ElevatedButton(
-                            onPressed: item.quantity > 0 ? () => _showDispatchDialog(context, item, state) : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.surfaceDark,
-                              foregroundColor: AppTheme.goldPrimary,
-                              side: const BorderSide(color: AppTheme.goldPrimary),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            ),
-                            child: const Text("Dispatch to Site", style: TextStyle(fontSize: 12)),
-                          ),
-                        ],
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          Widget rowContent = Row(
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: item.status == 'Low Stock' ? AppTheme.roseDanger.withOpacity(0.15) : AppTheme.goldPrimary.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Icon(
+                                  item.status == 'Low Stock' ? Icons.warning_amber : Icons.inventory_2_outlined,
+                                  color: item.status == 'Low Stock' ? AppTheme.roseDanger : AppTheme.goldPrimary,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(item.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight)),
+                                    const SizedBox(height: 2),
+                                    Text("SKU: ${item.sku} • Category: ${item.category} • Zone: ${item.warehouseZone}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("${item.quantity} ${item.unit}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: item.status == 'Low Stock' ? AppTheme.roseDanger : AppTheme.textLight)),
+                                    Text("Min Threshold: ${item.minThreshold} ${item.unit}", style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+                                  ],
+                                ),
+                              ),
+                              Text(currency.format(item.unitPrice), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
+                              const SizedBox(width: 20),
+                              StatusBadge(label: item.status, type: "status"),
+                              const SizedBox(width: 16),
+                              ElevatedButton(
+                                onPressed: item.quantity > 0 ? () => _showDispatchDialog(context, item, state) : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.surfaceDark,
+                                  foregroundColor: AppTheme.goldPrimary,
+                                  side: const BorderSide(color: AppTheme.goldPrimary),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                ),
+                                child: const Text("Dispatch to Site", style: TextStyle(fontSize: 12)),
+                              ),
+                            ],
+                          );
+
+                          if (constraints.maxWidth < 750) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(minWidth: 750),
+                                child: rowContent,
+                              ),
+                            );
+                          }
+                          return rowContent;
+                        },
                       ),
                     );
                   },
@@ -236,35 +270,33 @@ class InventoryWarehouseScreen extends StatelessWidget {
     );
   }
 
-  Widget _zoneSummaryCard(String title, String count, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.surfaceCard,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppTheme.surfaceBorder),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(6)),
-              child: Icon(icon, color: color, size: 18),
+  Widget _buildZoneCard(String title, String count, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceCard,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppTheme.surfaceBorder),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(6)),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(count, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
-                  Text(count, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

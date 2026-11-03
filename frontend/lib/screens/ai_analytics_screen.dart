@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
-import '../models/ai_prediction_model.dart';
 import '../theme/app_theme.dart';
-import '../widgets/status_badge.dart';
 
 class AIAnalyticsScreen extends StatelessWidget {
   const AIAnalyticsScreen({super.key});
@@ -20,19 +18,24 @@ class AIAnalyticsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 8,
                     children: [
                       const Text(
                         "AI Predictive Analytics Engine",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.textLight),
                       ),
-                      const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -41,13 +44,14 @@ class AIAnalyticsScreen extends StatelessWidget {
                           border: Border.all(color: AppTheme.goldPrimary),
                         ),
                         child: const Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.psychology, size: 14, color: AppTheme.goldPrimary),
                             SizedBox(width: 6),
                             Text("SCIKIT-LEARN ML BACKEND", style: TextStyle(color: AppTheme.goldPrimary, fontSize: 11, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -74,162 +78,174 @@ class AIAnalyticsScreen extends StatelessWidget {
 
           // Main Prediction Gauges
           if (ai != null) ...[
-            Row(
-              children: [
-                // Health Score Card
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    padding: const EdgeInsets.all(22),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceCard,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.surfaceBorder),
-                    ),
-                    child: Column(
-                      children: [
-                        const Text("PROJECT HEALTH SCORE", style: TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 14),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 110,
-                              height: 110,
-                              child: CircularProgressIndicator(
-                                value: ai.healthScore / 100,
-                                strokeWidth: 10,
-                                backgroundColor: AppTheme.surfaceBorder,
-                                color: ai.healthScore > 70 ? AppTheme.goldPrimary : AppTheme.roseDanger,
-                              ),
+            LayoutBuilder(
+              builder: (context, gaugeConstraints) {
+                final isWide = gaugeConstraints.maxWidth > 950;
+
+                final healthCard = Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceCard,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.surfaceBorder),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text("PROJECT HEALTH SCORE", style: TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 14),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 110,
+                            height: 110,
+                            child: CircularProgressIndicator(
+                              value: ai.healthScore / 100,
+                              strokeWidth: 10,
+                              backgroundColor: AppTheme.surfaceBorder,
+                              color: ai.healthScore > 70 ? AppTheme.goldPrimary : AppTheme.roseDanger,
                             ),
-                            Column(
-                              children: [
-                                Text("${ai.healthScore}", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                                const Text("/100", style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          ai.healthScore > 75 ? "Optimal Pipeline Status" : "Actionable Site Risk Flagged",
-                          style: TextStyle(
-                            color: ai.healthScore > 75 ? AppTheme.emeraldSuccess : AppTheme.amberWarning,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
                           ),
+                          Column(
+                            children: [
+                              Text("${ai.healthScore}", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+                              const Text("/100", style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        ai.healthScore > 75 ? "Optimal Pipeline Status" : "Actionable Site Risk Flagged",
+                        style: TextStyle(
+                          color: ai.healthScore > 75 ? AppTheme.emeraldSuccess : AppTheme.amberWarning,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ),
+                );
 
-                const SizedBox(width: 16),
-
-                // Delay Probability Card
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    padding: const EdgeInsets.all(22),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceCard,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.surfaceBorder),
-                    ),
-                    child: Column(
-                      children: [
-                        const Text("DELAY PROBABILITY", style: TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 14),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 110,
-                              height: 110,
-                              child: CircularProgressIndicator(
-                                value: ai.overallDelayProbability / 100,
-                                strokeWidth: 10,
-                                backgroundColor: AppTheme.surfaceBorder,
-                                color: ai.overallDelayProbability > 50 ? AppTheme.roseDanger : AppTheme.amberWarning,
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                Text("${ai.overallDelayProbability.toStringAsFixed(1)}%", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                                const Text("Risk", style: TextStyle(fontSize: 11, color: AppTheme.textMuted)),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "+${ai.daysVariance} Days Variance Forecast",
-                          style: const TextStyle(color: AppTheme.roseDanger, fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
+                final delayCard = Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceCard,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.surfaceBorder),
                   ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Schedule Variance Banner
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: const EdgeInsets.all(22),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceCard,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.surfaceBorder),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x0A0F172A),
-                          blurRadius: 10,
-                          offset: Offset(0, 3),
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("TIMELINE RECONCILIATION", style: TextStyle(color: AppTheme.goldPrimary, fontSize: 11, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text("Contractual Target Deadline", style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                                const SizedBox(height: 4),
-                                Text(ai.targetEndDate, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                              ],
+                  child: Column(
+                    children: [
+                      const Text("DELAY PROBABILITY", style: TextStyle(color: AppTheme.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 14),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 110,
+                            height: 110,
+                            child: CircularProgressIndicator(
+                              value: ai.overallDelayProbability / 100,
+                              strokeWidth: 10,
+                              backgroundColor: AppTheme.surfaceBorder,
+                              color: ai.overallDelayProbability > 50 ? AppTheme.roseDanger : AppTheme.amberWarning,
                             ),
-                            const Icon(Icons.arrow_forward, color: AppTheme.goldPrimary),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Text("AI Predicted Handover", style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                                const SizedBox(height: 4),
-                                Text(ai.predictedCompletionDate, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.roseDanger)),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        const Divider(color: AppTheme.surfaceBorder),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Scikit-Learn model assessed ${ai.totalTasksTracked} real-time tasks with ${ai.highRiskTaskCount} critical path tasks exceeding normal trade duration.",
-                          style: const TextStyle(fontSize: 12, color: AppTheme.textMuted, height: 1.4),
-                        ),
-                      ],
-                    ),
+                          ),
+                          Column(
+                            children: [
+                              Text("${ai.overallDelayProbability.toStringAsFixed(1)}%", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+                              const Text("Risk", style: TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "+${ai.daysVariance} Days Variance Forecast",
+                        style: const TextStyle(color: AppTheme.roseDanger, fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                );
+
+                final timelineCard = Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceCard,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.surfaceBorder),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x0A0F172A),
+                        blurRadius: 10,
+                        offset: Offset(0, 3),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("TIMELINE RECONCILIATION", style: TextStyle(color: AppTheme.goldPrimary, fontSize: 11, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Contractual Target Deadline", style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                              const SizedBox(height: 4),
+                              Text(ai.targetEndDate, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+                            ],
+                          ),
+                          const Icon(Icons.arrow_forward, color: AppTheme.goldPrimary),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Text("AI Predicted Handover", style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                              const SizedBox(height: 4),
+                              Text(ai.predictedCompletionDate, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.roseDanger)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(color: AppTheme.surfaceBorder),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Scikit-Learn model assessed ${ai.totalTasksTracked} real-time tasks with ${ai.highRiskTaskCount} critical path tasks exceeding normal trade duration.",
+                        style: const TextStyle(fontSize: 12, color: AppTheme.textMuted, height: 1.4),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (isWide) {
+                  return Row(
+                    children: [
+                      Expanded(flex: 1, child: healthCard),
+                      const SizedBox(width: 16),
+                      Expanded(flex: 1, child: delayCard),
+                      const SizedBox(width: 16),
+                      Expanded(flex: 2, child: timelineCard),
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: healthCard),
+                          const SizedBox(width: 14),
+                          Expanded(child: delayCard),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      timelineCard,
+                    ],
+                  );
+                }
+              },
             ),
 
             const SizedBox(height: 28),
@@ -245,10 +261,14 @@ class AIAnalyticsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 8,
                     children: [
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: const [
                           Icon(Icons.bolt, color: AppTheme.goldPrimary, size: 22),
                           SizedBox(width: 8),

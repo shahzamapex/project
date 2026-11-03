@@ -19,8 +19,11 @@ class SiteManagementScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,10 +65,14 @@ class SiteManagementScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 12,
                     children: [
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             padding: const EdgeInsets.all(10),
@@ -92,13 +99,29 @@ class SiteManagementScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   const Divider(color: AppTheme.surfaceBorder),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      _siteDetailCol("ASSIGNED LEAD ENGINEER", "Marcus Lee (Lead Site Engineer)"),
-                      _siteDetailCol("LAST FIELD INSPECTION", "2026-11-01 14:00 (Passed)"),
-                      _siteDetailCol("ACTIVE SITE TASKS", "${tasks.length} Tracked Tasks"),
-                      _siteDetailCol("ESTIMATED COMPLETION", currentProject.targetEndDate),
-                    ],
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      if (constraints.maxWidth < 700) {
+                        return Wrap(
+                          spacing: 16,
+                          runSpacing: 12,
+                          children: [
+                            SizedBox(width: (constraints.maxWidth - 20) / 2, child: _siteDetailTile("ASSIGNED LEAD ENGINEER", "Marcus Lee (Lead Site Engineer)")),
+                            SizedBox(width: (constraints.maxWidth - 20) / 2, child: _siteDetailTile("LAST FIELD INSPECTION", "2026-11-01 14:00 (Passed)")),
+                            SizedBox(width: (constraints.maxWidth - 20) / 2, child: _siteDetailTile("ACTIVE SITE TASKS", "${tasks.length} Tracked Tasks")),
+                            SizedBox(width: (constraints.maxWidth - 20) / 2, child: _siteDetailTile("ESTIMATED COMPLETION", currentProject.targetEndDate)),
+                          ],
+                        );
+                      }
+                      return Row(
+                        children: [
+                          _siteDetailCol("ASSIGNED LEAD ENGINEER", "Marcus Lee (Lead Site Engineer)"),
+                          _siteDetailCol("LAST FIELD INSPECTION", "2026-11-01 14:00 (Passed)"),
+                          _siteDetailCol("ACTIVE SITE TASKS", "${tasks.length} Tracked Tasks"),
+                          _siteDetailCol("ESTIMATED COMPLETION", currentProject.targetEndDate),
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -145,41 +168,56 @@ class SiteManagementScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppTheme.surfaceBorder),
                 ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.apartment, color: AppTheme.tealAccent, size: 24),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(p.title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                          const SizedBox(height: 2),
-                          Text(p.siteAddress, style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        index == 0 ? "Eng. Marcus Lee" : (index == 1 ? "Eng. Sarah Chen" : "Pending Assignment"),
-                        style: const TextStyle(fontSize: 12, color: AppTheme.goldPrimary, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    StatusBadge(label: p.status, type: "status"),
-                    const SizedBox(width: 14),
-                    OutlinedButton(
-                      onPressed: () {
-                        state.setSelectedProject(p);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Switched active site to '${p.title}'.")),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
-                      child: const Text("Select Site", style: TextStyle(fontSize: 11)),
-                    ),
-                  ],
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    Widget rowContent = Row(
+                      children: [
+                        const Icon(Icons.apartment, color: AppTheme.tealAccent, size: 24),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(p.title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+                              const SizedBox(height: 2),
+                              Text(p.siteAddress, style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            index == 0 ? "Eng. Marcus Lee" : (index == 1 ? "Eng. Sarah Chen" : "Pending Assignment"),
+                            style: const TextStyle(fontSize: 12, color: AppTheme.goldPrimary, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        StatusBadge(label: p.status, type: "status"),
+                        const SizedBox(width: 14),
+                        OutlinedButton(
+                          onPressed: () {
+                            state.setSelectedProject(p);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Switched active site to '${p.title}'.")),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+                          child: const Text("Select Site", style: TextStyle(fontSize: 11)),
+                        ),
+                      ],
+                    );
+
+                    if (constraints.maxWidth < 650) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minWidth: 650),
+                          child: rowContent,
+                        ),
+                      );
+                    }
+                    return rowContent;
+                  },
                 ),
               );
             },
@@ -189,16 +227,20 @@ class SiteManagementScreen extends StatelessWidget {
     );
   }
 
+  Widget _siteDetailTile(String title, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text(value, style: const TextStyle(color: AppTheme.textLight, fontSize: 13, fontWeight: FontWeight.w600)),
+      ],
+    );
+  }
+
   Widget _siteDetailCol(String title, String value) {
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(value, style: const TextStyle(color: AppTheme.textLight, fontSize: 13, fontWeight: FontWeight.w600)),
-        ],
-      ),
+      child: _siteDetailTile(title, value),
     );
   }
 }

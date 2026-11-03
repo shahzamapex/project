@@ -54,13 +54,17 @@ class _FulfillmentMatrixScreenState extends State<FulfillmentMatrixScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top Bar & Title
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 12,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -102,7 +106,9 @@ class _FulfillmentMatrixScreenState extends State<FulfillmentMatrixScreen> {
                   ],
                 ),
                 // Global Actions
-                Row(
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
                   children: [
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
@@ -119,7 +125,6 @@ class _FulfillmentMatrixScreenState extends State<FulfillmentMatrixScreen> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const SizedBox(width: 12),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.goldPrimary,
@@ -142,48 +147,83 @@ class _FulfillmentMatrixScreenState extends State<FulfillmentMatrixScreen> {
             const SizedBox(height: 24),
 
             // KPI Stats Row
-            Row(
-              children: [
-                Expanded(
-                  child: _buildKpiCard(
-                    title: "TOTAL SPECIFIED",
-                    value: "$totalCount Items",
-                    subtitle: "Site Bill of Materials",
-                    icon: Icons.list_alt,
-                    accentColor: AppTheme.textMuted,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildKpiCard(
-                    title: "WAREHOUSE FULFILLED",
-                    value: "$fulfilledCount Items",
-                    subtitle: "Reserved or In Transit",
-                    icon: Icons.check_circle_outline,
-                    accentColor: const Color(0xFF10B981),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildKpiCard(
-                    title: "OUT OF STOCK / DEFICIT",
-                    value: "$procurementCount POs",
-                    subtitle: "Procurement Requisitions",
-                    icon: Icons.shopping_cart_checkout,
-                    accentColor: Colors.amber,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildKpiCard(
-                    title: "INSTALLED CONFIRMED",
-                    value: "$installedCount Fitted",
-                    subtitle: "Signed off on site",
-                    icon: Icons.verified,
-                    accentColor: AppTheme.tealPrimary,
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, kpiConstraints) {
+                final k1 = _buildKpiCard(
+                  title: "TOTAL SPECIFIED",
+                  value: "$totalCount Items",
+                  subtitle: "Site Bill of Materials",
+                  icon: Icons.list_alt,
+                  accentColor: AppTheme.textMuted,
+                );
+                final k2 = _buildKpiCard(
+                  title: "WAREHOUSE FULFILLED",
+                  value: "$fulfilledCount Items",
+                  subtitle: "Reserved or In Transit",
+                  icon: Icons.check_circle_outline,
+                  accentColor: const Color(0xFF10B981),
+                );
+                final k3 = _buildKpiCard(
+                  title: "OUT OF STOCK / DEFICIT",
+                  value: "$procurementCount POs",
+                  subtitle: "Procurement Requisitions",
+                  icon: Icons.shopping_cart_checkout,
+                  accentColor: Colors.amber,
+                );
+                final k4 = _buildKpiCard(
+                  title: "INSTALLED CONFIRMED",
+                  value: "$installedCount Fitted",
+                  subtitle: "Signed off on site",
+                  icon: Icons.verified,
+                  accentColor: AppTheme.tealPrimary,
+                );
+
+                if (kpiConstraints.maxWidth > 1050) {
+                  return Row(
+                    children: [
+                      Expanded(child: k1),
+                      const SizedBox(width: 16),
+                      Expanded(child: k2),
+                      const SizedBox(width: 16),
+                      Expanded(child: k3),
+                      const SizedBox(width: 16),
+                      Expanded(child: k4),
+                    ],
+                  );
+                } else if (kpiConstraints.maxWidth > 650) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: k1),
+                          const SizedBox(width: 14),
+                          Expanded(child: k2),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(child: k3),
+                          const SizedBox(width: 14),
+                          Expanded(child: k4),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      k1,
+                      const SizedBox(height: 10),
+                      k2,
+                      const SizedBox(height: 10),
+                      k3,
+                      const SizedBox(height: 10),
+                      k4,
+                    ],
+                  );
+                }
+              },
             ),
 
             const SizedBox(height: 24),
@@ -196,41 +236,62 @@ class _FulfillmentMatrixScreenState extends State<FulfillmentMatrixScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.surfaceBorder),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      style: const TextStyle(color: AppTheme.textLight, fontSize: 13),
-                      decoration: InputDecoration(
-                        hintText: "Search site specification by material name, category...",
-                        hintStyle: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
-                        prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted, size: 20),
-                        isDense: true,
-                        filled: true,
-                        fillColor: AppTheme.surfaceDark,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppTheme.surfaceBorder),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppTheme.surfaceBorder),
-                        ),
+              child: LayoutBuilder(
+                builder: (context, filterConstraints) {
+                  final isWide = filterConstraints.maxWidth > 950;
+                  final searchField = TextField(
+                    style: const TextStyle(color: AppTheme.textLight, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: "Search site specification by material name, category...",
+                      hintStyle: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                      prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted, size: 20),
+                      isDense: true,
+                      filled: true,
+                      fillColor: AppTheme.surfaceDark,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: AppTheme.surfaceBorder),
                       ),
-                      onChanged: (val) {
-                        setState(() => _searchQuery = val);
-                      },
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: AppTheme.surfaceBorder),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  _buildFilterChip("ALL", "All Items ($totalCount)"),
-                  const SizedBox(width: 8),
-                  _buildFilterChip("FULFILLED", "Fulfilled ($fulfilledCount)"),
-                  const SizedBox(width: 8),
-                  _buildFilterChip("PROCUREMENT", "Out of Stock ($procurementCount)"),
-                  const SizedBox(width: 8),
-                  _buildFilterChip("INSTALLED", "Installed ($installedCount)"),
-                ],
+                    onChanged: (val) {
+                      setState(() => _searchQuery = val);
+                    },
+                  );
+
+                  final chips = Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildFilterChip("ALL", "All Items ($totalCount)"),
+                      _buildFilterChip("FULFILLED", "Fulfilled ($fulfilledCount)"),
+                      _buildFilterChip("PROCUREMENT", "Out of Stock ($procurementCount)"),
+                      _buildFilterChip("INSTALLED", "Installed ($installedCount)"),
+                    ],
+                  );
+
+                  if (isWide) {
+                    return Row(
+                      children: [
+                        Expanded(child: searchField),
+                        const SizedBox(width: 16),
+                        chips,
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        searchField,
+                        const SizedBox(height: 12),
+                        chips,
+                      ],
+                    );
+                  }
+                },
               ),
             ),
 
@@ -243,53 +304,63 @@ class _FulfillmentMatrixScreenState extends State<FulfillmentMatrixScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.surfaceBorder),
               ),
-              child: Column(
-                children: [
-                  // Table Header
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceDark.withOpacity(0.6),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                      border: Border(bottom: BorderSide(color: AppTheme.surfaceBorder)),
-                    ),
-                    child: Row(
-                      children: const [
-                        Expanded(flex: 3, child: Text("MATERIAL SPECIFICATION & DETAILS", style: _headerStyle)),
-                        Expanded(flex: 2, child: Text("CATEGORY", style: _headerStyle)),
-                        Expanded(flex: 1, child: Text("REQUIRED", style: _headerStyle)),
-                        Expanded(flex: 1, child: Text("ALLOCATED", style: _headerStyle)),
-                        Expanded(flex: 1, child: Text("INSTALLED", style: _headerStyle)),
-                        Expanded(flex: 2, child: Text("FULFILLMENT STATUS", style: _headerStyle)),
-                        Expanded(flex: 2, child: Text("INSTALLATION", style: _headerStyle)),
-                        SizedBox(width: 140, child: Text("ACTIONS", style: _headerStyle, textAlign: TextAlign.right)),
-                      ],
-                    ),
-                  ),
-
-                  // Table Rows
-                  if (requirements.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(40),
-                      child: Center(
-                        child: Text(
-                          "No material requirements match the selected filter.",
-                          style: TextStyle(color: AppTheme.textMuted),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 960),
+                  child: Column(
+                    children: [
+                      // Table Header
+                      Container(
+                        width: 960,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceDark.withOpacity(0.6),
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          border: Border(bottom: BorderSide(color: AppTheme.surfaceBorder)),
+                        ),
+                        child: Row(
+                          children: const [
+                            Expanded(flex: 3, child: Text("MATERIAL SPECIFICATION & DETAILS", style: _headerStyle)),
+                            Expanded(flex: 2, child: Text("CATEGORY", style: _headerStyle)),
+                            Expanded(flex: 1, child: Text("REQUIRED", style: _headerStyle)),
+                            Expanded(flex: 1, child: Text("ALLOCATED", style: _headerStyle)),
+                            Expanded(flex: 1, child: Text("INSTALLED", style: _headerStyle)),
+                            Expanded(flex: 2, child: Text("FULFILLMENT STATUS", style: _headerStyle)),
+                            Expanded(flex: 2, child: Text("INSTALLATION", style: _headerStyle)),
+                            SizedBox(width: 140, child: Text("ACTIONS", style: _headerStyle, textAlign: TextAlign.right)),
+                          ],
                         ),
                       ),
-                    )
-                  else
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: requirements.length,
-                      separatorBuilder: (ctx, i) => Divider(color: AppTheme.surfaceBorder, height: 1),
-                      itemBuilder: (ctx, idx) {
-                        final req = requirements[idx];
-                        return _buildMatrixRow(context, req, state);
-                      },
-                    ),
-                ],
+
+                      // Table Rows
+                      if (requirements.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.all(40),
+                          child: Center(
+                            child: Text(
+                              "No material requirements match the selected filter.",
+                              style: TextStyle(color: AppTheme.textMuted),
+                            ),
+                          ),
+                        )
+                      else
+                        SizedBox(
+                          width: 960,
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: requirements.length,
+                            separatorBuilder: (ctx, i) => Divider(color: AppTheme.surfaceBorder, height: 1),
+                            itemBuilder: (ctx, idx) {
+                              final req = requirements[idx];
+                              return _buildMatrixRow(context, req, state);
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

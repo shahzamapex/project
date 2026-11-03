@@ -102,19 +102,24 @@ class OwnerDashboard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 8,
                     children: [
                       const Text(
                         "Executive Command Center",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.textLight),
                       ),
-                      const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -123,13 +128,14 @@ class OwnerDashboard extends StatelessWidget {
                           border: Border.all(color: AppTheme.goldPrimary),
                         ),
                         child: const Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.verified_user, size: 14, color: AppTheme.goldPrimary),
                             SizedBox(width: 6),
                             Text("ROLE: OWNER", style: TextStyle(color: AppTheme.goldPrimary, fontSize: 11, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -159,7 +165,7 @@ class OwnerDashboard extends StatelessWidget {
                 mainAxisSpacing: 16,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 2.1,
+                childAspectRatio: constraints.maxWidth > 1100 ? 2.1 : (constraints.maxWidth > 700 ? 2.2 : 2.5),
                 children: [
                   MetricCard(
                     title: "Active Projects",
@@ -199,47 +205,49 @@ class OwnerDashboard extends StatelessWidget {
           const SizedBox(height: 28),
 
           // Two-Column Section: AI Predictive Insights & Quick Actions
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left: AI Delay & Resource Allocation Banner
-              Expanded(
-                flex: 3,
-                child: Container(
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceCard,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.surfaceBorder),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x0A0F172A),
-                        blurRadius: 10,
-                        offset: Offset(0, 3),
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.auto_awesome, color: AppTheme.goldPrimary, size: 20),
-                              SizedBox(width: 8),
-                              Text("Scikit-Learn Predictive Site Analytics", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                            ],
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: () => state.setActiveTab(AppTab.aiAnalytics),
-                            icon: const Icon(Icons.arrow_forward, size: 14),
-                            label: const Text("Full Analysis", style: TextStyle(fontSize: 12)),
-                            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
-                          ),
-                        ],
-                      ),
+          LayoutBuilder(
+            builder: (context, sectionConstraints) {
+              final isWide = sectionConstraints.maxWidth > 920;
+
+              final leftCard = Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceCard,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.surfaceBorder),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x0A0F172A),
+                      blurRadius: 10,
+                      offset: Offset(0, 3),
+                    )
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 12,
+                      runSpacing: 8,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.auto_awesome, color: AppTheme.goldPrimary, size: 20),
+                            SizedBox(width: 8),
+                            Text("Scikit-Learn Predictive Site Analytics", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+                          ],
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => state.setActiveTab(AppTab.aiAnalytics),
+                          icon: const Icon(Icons.arrow_forward, size: 14),
+                          label: const Text("Full Analysis", style: TextStyle(fontSize: 12)),
+                          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+                        ),
+                      ],
+                    ),
                       const SizedBox(height: 16),
                       if (ai != null) ...[
                         Row(
@@ -312,59 +320,71 @@ class OwnerDashboard extends StatelessWidget {
                       ],
                     ],
                   ),
-                ),
-              ),
+                );
 
-              const SizedBox(width: 20),
-
-              // Right: OCR Automation Quick Card
-              Expanded(
-                flex: 2,
-                child: Container(
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceCard,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.surfaceBorder),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.document_scanner_outlined, color: AppTheme.tealAccent, size: 20),
-                          SizedBox(width: 8),
-                          Text("OCR Task Automation", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        "Upload architectural drawings, specifications, or BoQ PDFs. Tesseract OCR will extract and structure tasks automatically into the Supabase database.",
-                        style: TextStyle(fontSize: 12, color: AppTheme.textMuted, height: 1.4),
-                      ),
-                      const SizedBox(height: 18),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () => state.setActiveTab(AppTab.ocrTasks),
-                          icon: const Icon(Icons.upload_file, size: 16),
-                          label: const Text("Upload Document & Scan"),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: () => state.setActiveTab(AppTab.drawings),
-                          icon: const Icon(Icons.draw_outlined, size: 16),
-                          label: const Text("Open Drawing Center"),
-                        ),
-                      ),
-                    ],
-                  ),
+              final rightCard = Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceCard,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.surfaceBorder),
                 ),
-              ),
-            ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: const [
+                        Icon(Icons.document_scanner_outlined, color: AppTheme.tealAccent, size: 20),
+                        SizedBox(width: 8),
+                        Text("OCR Task Automation", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      "Upload architectural drawings, specifications, or BoQ PDFs. Tesseract OCR will extract and structure tasks automatically into the Supabase database.",
+                      style: TextStyle(fontSize: 12, color: AppTheme.textMuted, height: 1.4),
+                    ),
+                    const SizedBox(height: 18),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => state.setActiveTab(AppTab.ocrTasks),
+                        icon: const Icon(Icons.upload_file, size: 16),
+                        label: const Text("Upload Document & Scan"),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () => state.setActiveTab(AppTab.drawings),
+                        icon: const Icon(Icons.draw_outlined, size: 16),
+                        label: const Text("Open Drawing Center"),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+
+              if (isWide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 3, child: leftCard),
+                    const SizedBox(width: 20),
+                    Expanded(flex: 2, child: rightCard),
+                  ],
+                );
+              } else {
+                return Column(
+                  children: [
+                    leftCard,
+                    const SizedBox(height: 20),
+                    rightCard,
+                  ],
+                );
+              }
+            },
           ),
 
           const SizedBox(height: 28),
@@ -380,8 +400,11 @@ class OwnerDashboard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
+                  runSpacing: 6,
                   children: [
                     const Text(
                       "Active Interior Architecture Projects",
@@ -405,56 +428,72 @@ class OwnerDashboard extends StatelessWidget {
                       onTap: () => state.setSelectedProject(p),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: AppTheme.goldPrimary.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(Icons.apartment, color: AppTheme.goldPrimary, size: 22),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(p.title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight)),
-                                  const SizedBox(height: 2),
-                                  Text("Client: ${p.clientName} • ${p.siteAddress}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Progress: ${p.progressPercent}%", style: const TextStyle(fontSize: 12, color: AppTheme.textLight)),
-                                  const SizedBox(height: 4),
-                                  LinearProgressIndicator(
-                                    value: p.progressPercent / 100,
-                                    backgroundColor: AppTheme.surfaceBorder,
-                                    color: AppTheme.goldPrimary,
-                                    minHeight: 5,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 24),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                        child: LayoutBuilder(
+                          builder: (context, rowConstraints) {
+                            final rowWidget = Row(
                               children: [
-                                Text(currency.format(p.budget), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
-                                Text("Spent: ${currency.format(p.spent)}", style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.goldPrimary.withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.apartment, color: AppTheme.goldPrimary, size: 22),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(p.title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      const SizedBox(height: 2),
+                                      Text("Client: ${p.clientName} • ${p.siteAddress}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  flex: 2,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Progress: ${p.progressPercent}%", style: const TextStyle(fontSize: 12, color: AppTheme.textLight)),
+                                      const SizedBox(height: 4),
+                                      LinearProgressIndicator(
+                                        value: p.progressPercent / 100,
+                                        backgroundColor: AppTheme.surfaceBorder,
+                                        color: AppTheme.goldPrimary,
+                                        minHeight: 5,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 24),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(currency.format(p.budget), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
+                                    Text("Spent: ${currency.format(p.spent)}", style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+                                  ],
+                                ),
+                                const SizedBox(width: 16),
+                                StatusBadge(label: p.status, type: "status"),
                               ],
-                            ),
-                            const SizedBox(width: 16),
-                            StatusBadge(label: p.status, type: "status"),
-                          ],
+                            );
+
+                            if (rowConstraints.maxWidth < 650) {
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(minWidth: 650),
+                                  child: rowWidget,
+                                ),
+                              );
+                            }
+                            return rowWidget;
+                          },
                         ),
                       ),
                     );

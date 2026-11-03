@@ -41,13 +41,17 @@ class _InstallationSignoffScreenState extends State<InstallationSignoffScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 12,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -94,6 +98,7 @@ class _InstallationSignoffScreenState extends State<InstallationSignoffScreen> {
                     border: Border.all(color: AppTheme.surfaceBorder),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const CircleAvatar(
                         radius: 14,
@@ -123,10 +128,11 @@ class _InstallationSignoffScreenState extends State<InstallationSignoffScreen> {
             const SizedBox(height: 24),
 
             // Tabs Selector
-            Row(
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
               children: [
                 _buildTabButton("PENDING", "Pending Site Fitment (${pendingItems.length})", Icons.hourglass_top),
-                const SizedBox(width: 12),
                 _buildTabButton("CONFIRMED", "Confirmed & Signed Off (${confirmedItems.length})", Icons.verified),
               ],
             ),
@@ -197,6 +203,7 @@ class _InstallationSignoffScreenState extends State<InstallationSignoffScreen> {
           ),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 16, color: isSelected ? AppTheme.tealPrimary : AppTheme.textMuted),
             const SizedBox(width: 8),
@@ -239,7 +246,9 @@ class _InstallationSignoffScreenState extends State<InstallationSignoffScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -260,7 +269,6 @@ class _InstallationSignoffScreenState extends State<InstallationSignoffScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(

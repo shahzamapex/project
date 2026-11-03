@@ -162,19 +162,24 @@ class ClientPortalScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 6,
                     children: [
                       const Text(
                         "Client Luxury Portal",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.textLight),
                       ),
-                      const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -183,6 +188,7 @@ class ClientPortalScreen extends StatelessWidget {
                           border: Border.all(color: AppTheme.goldPrimary),
                         ),
                         child: const Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.star, size: 14, color: AppTheme.goldPrimary),
                             SizedBox(width: 6),
@@ -225,56 +231,69 @@ class ClientPortalScreen extends StatelessWidget {
                   )
                 ],
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 3,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final infoColumn = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(project.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
+                      const SizedBox(height: 6),
+                      Text(project.description, style: const TextStyle(fontSize: 13, color: AppTheme.textMuted, height: 1.4)),
+                      const SizedBox(height: 18),
+                      Wrap(
+                        spacing: 24,
+                        runSpacing: 12,
+                        children: [
+                          _statItem("TOTAL BUDGET", currency.format(project.budget)),
+                          _statItem("FUNDS BILLED", currency.format(project.spent)),
+                          _statItem("ESTIMATED COMPLETION", project.targetEndDate),
+                        ],
+                      ),
+                    ],
+                  );
+
+                  final progressCard = Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceDark,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppTheme.goldPrimary.withOpacity(0.3)),
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(project.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                        const SizedBox(height: 6),
-                        Text(project.description, style: const TextStyle(fontSize: 13, color: AppTheme.textMuted, height: 1.4)),
-                        const SizedBox(height: 18),
-                        Row(
-                          children: [
-                            _statItem("TOTAL BUDGET", currency.format(project.budget)),
-                            const SizedBox(width: 28),
-                            _statItem("FUNDS BILLED", currency.format(project.spent)),
-                            const SizedBox(width: 28),
-                            _statItem("ESTIMATED COMPLETION", project.targetEndDate),
-                          ],
+                        const Text("OVERALL SITE COMPLETION", style: TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Text("${project.progressPercent}%", style: const TextStyle(color: AppTheme.goldPrimary, fontSize: 32, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        LinearProgressIndicator(
+                          value: project.progressPercent / 100,
+                          backgroundColor: AppTheme.surfaceBorder,
+                          color: AppTheme.goldPrimary,
+                          minHeight: 6,
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: AppTheme.surfaceDark,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppTheme.goldPrimary.withOpacity(0.3)),
-                      ),
-                      child: Column(
-                        children: [
-                          const Text("OVERALL SITE COMPLETION", style: TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          Text("${project.progressPercent}%", style: const TextStyle(color: AppTheme.goldPrimary, fontSize: 32, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            value: project.progressPercent / 100,
-                            backgroundColor: AppTheme.surfaceBorder,
-                            color: AppTheme.goldPrimary,
-                            minHeight: 6,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+
+                  if (constraints.maxWidth < 750) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        infoColumn,
+                        const SizedBox(height: 20),
+                        progressCard,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      Expanded(flex: 3, child: infoColumn),
+                      const SizedBox(width: 24),
+                      Expanded(flex: 1, child: progressCard),
+                    ],
+                  );
+                },
               ),
             ),
 
@@ -395,8 +414,11 @@ class ClientPortalScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 16,
+                  runSpacing: 8,
                   children: const [
                     Text("Payment Milestones & Invoices", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
                     Text("All payments backed by automated SendGrid receipts", style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
@@ -412,48 +434,63 @@ class ClientPortalScreen extends StatelessWidget {
                     final inv = invoices[index];
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: inv.status == 'Paid' ? AppTheme.emeraldSuccess.withOpacity(0.15) : AppTheme.goldPrimary.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Icon(
-                              inv.status == 'Paid' ? Icons.check_circle : Icons.receipt_long,
-                              color: inv.status == 'Paid' ? AppTheme.emeraldSuccess : AppTheme.goldPrimary,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(inv.milestoneName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight)),
-                                const SizedBox(height: 2),
-                                Text("Invoice: ${inv.invoiceNumber} • Due Date: ${inv.dueDate}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                              ],
-                            ),
-                          ),
-                          Text(currency.format(inv.amount), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
-                          const SizedBox(width: 20),
-                          StatusBadge(label: inv.status, type: "status"),
-                          const SizedBox(width: 16),
-                          if (inv.status != 'Paid')
-                            ElevatedButton(
-                              onPressed: () => _showPayInvoiceDialog(context, inv, state),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          Widget rowContent = Row(
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: inv.status == 'Paid' ? AppTheme.emeraldSuccess.withOpacity(0.15) : AppTheme.goldPrimary.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Icon(
+                                  inv.status == 'Paid' ? Icons.check_circle : Icons.receipt_long,
+                                  color: inv.status == 'Paid' ? AppTheme.emeraldSuccess : AppTheme.goldPrimary,
+                                  size: 20,
+                                ),
                               ),
-                              child: const Text("Pay Milestone", style: TextStyle(fontSize: 12)),
-                            )
-                          else
-                            const Text("Receipt Emailed", style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
-                        ],
+                              const SizedBox(width: 14),
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(inv.milestoneName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight)),
+                                    const SizedBox(height: 2),
+                                    Text("Invoice: ${inv.invoiceNumber} • Due Date: ${inv.dueDate}", style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                                  ],
+                                ),
+                              ),
+                              Text(currency.format(inv.amount), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary)),
+                              const SizedBox(width: 20),
+                              StatusBadge(label: inv.status, type: "status"),
+                              const SizedBox(width: 16),
+                              if (inv.status != 'Paid')
+                                ElevatedButton(
+                                  onPressed: () => _showPayInvoiceDialog(context, inv, state),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ),
+                                  child: const Text("Pay Milestone", style: TextStyle(fontSize: 12)),
+                                )
+                              else
+                                const Text("Receipt Emailed", style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+                            ],
+                          );
+
+                          if (constraints.maxWidth < 650) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(minWidth: 650),
+                                child: rowContent,
+                              ),
+                            );
+                          }
+                          return rowContent;
+                        },
                       ),
                     );
                   },

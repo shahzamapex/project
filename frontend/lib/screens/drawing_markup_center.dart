@@ -66,19 +66,24 @@ class _DrawingMarkupCenterState extends State<DrawingMarkupCenter> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 6,
                     children: [
                       const Text(
                         "Architectural Drawing & Markup Center",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.textLight),
                       ),
-                      const SizedBox(width: 12),
                       if (selectedDrawing != null)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -101,7 +106,10 @@ class _DrawingMarkupCenterState extends State<DrawingMarkupCenter> {
                   ),
                 ],
               ),
-              Row(
+              Wrap(
+                spacing: 14,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   // Mode Toggle
                   Container(
@@ -111,6 +119,7 @@ class _DrawingMarkupCenterState extends State<DrawingMarkupCenter> {
                       border: Border.all(color: AppTheme.surfaceBorder),
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         _modeButton(
                           isActive: _isDrawingMode,
@@ -127,7 +136,6 @@ class _DrawingMarkupCenterState extends State<DrawingMarkupCenter> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 14),
                   ElevatedButton.icon(
                     onPressed: () => _saveCurrentMarkups(state),
                     icon: const Icon(Icons.cloud_upload_outlined, size: 16),

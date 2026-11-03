@@ -39,13 +39,17 @@ class _WarehouseDispatcherScreenState extends State<WarehouseDispatcherScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 12,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -106,48 +110,83 @@ class _WarehouseDispatcherScreenState extends State<WarehouseDispatcherScreen> {
             const SizedBox(height: 24),
 
             // Top KPI Row
-            Row(
-              children: [
-                Expanded(
-                  child: _buildMetricCard(
-                    title: "RESERVED QUEUE",
-                    value: "${reservedAllocations.length} Items",
-                    subtitle: "Allocations awaiting dispatch",
-                    icon: Icons.bookmark_added,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildMetricCard(
-                    title: "TOTAL RESERVED VOLUME",
-                    value: "${totalReservedUnits.toStringAsFixed(0)} Units",
-                    subtitle: "Locked warehouse inventory",
-                    icon: Icons.inventory_2,
-                    color: AppTheme.goldPrimary,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildMetricCard(
-                    title: "DESTINATION SITES",
-                    value: "${grouped.keys.length} Projects",
-                    subtitle: "Staging staging sites",
-                    icon: Icons.location_on_outlined,
-                    color: AppTheme.tealPrimary,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildMetricCard(
-                    title: "TRANSIT GATE PASSES",
-                    value: "14 Issued",
-                    subtitle: "Active on-road deliveries",
-                    icon: Icons.local_shipping,
-                    color: const Color(0xFF10B981),
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, kpiConstraints) {
+                final m1 = _buildMetricCard(
+                  title: "RESERVED QUEUE",
+                  value: "${reservedAllocations.length} Items",
+                  subtitle: "Allocations awaiting dispatch",
+                  icon: Icons.bookmark_added,
+                  color: Colors.blue,
+                );
+                final m2 = _buildMetricCard(
+                  title: "TOTAL RESERVED VOLUME",
+                  value: "${totalReservedUnits.toStringAsFixed(0)} Units",
+                  subtitle: "Locked warehouse inventory",
+                  icon: Icons.inventory_2,
+                  color: AppTheme.goldPrimary,
+                );
+                final m3 = _buildMetricCard(
+                  title: "DESTINATION SITES",
+                  value: "${grouped.keys.length} Projects",
+                  subtitle: "Staging staging sites",
+                  icon: Icons.location_on_outlined,
+                  color: AppTheme.tealPrimary,
+                );
+                final m4 = _buildMetricCard(
+                  title: "TRANSIT GATE PASSES",
+                  value: "14 Issued",
+                  subtitle: "Active on-road deliveries",
+                  icon: Icons.local_shipping,
+                  color: const Color(0xFF10B981),
+                );
+
+                if (kpiConstraints.maxWidth > 1050) {
+                  return Row(
+                    children: [
+                      Expanded(child: m1),
+                      const SizedBox(width: 16),
+                      Expanded(child: m2),
+                      const SizedBox(width: 16),
+                      Expanded(child: m3),
+                      const SizedBox(width: 16),
+                      Expanded(child: m4),
+                    ],
+                  );
+                } else if (kpiConstraints.maxWidth > 650) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: m1),
+                          const SizedBox(width: 14),
+                          Expanded(child: m2),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(child: m3),
+                          const SizedBox(width: 14),
+                          Expanded(child: m4),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      m1,
+                      const SizedBox(height: 10),
+                      m2,
+                      const SizedBox(height: 10),
+                      m3,
+                      const SizedBox(height: 10),
+                      m4,
+                    ],
+                  );
+                }
+              },
             ),
 
             const SizedBox(height: 24),

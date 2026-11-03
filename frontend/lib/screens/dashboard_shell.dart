@@ -310,27 +310,32 @@ class _DashboardShellState extends State<DashboardShell> {
                   child: Row(
                     children: [
                       // Breadcrumb
-                      Row(
-                        children: [
-                          const Icon(Icons.home_outlined, size: 16, color: AppTheme.textMuted),
-                          const SizedBox(width: 8),
-                          const Text("/", style: TextStyle(color: AppTheme.surfaceBorder)),
-                          const SizedBox(width: 8),
-                          Text(
-                            state.selectedProject?.title ?? "Studio Projects",
-                            style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.home_outlined, size: 16, color: AppTheme.textMuted),
+                              const SizedBox(width: 8),
+                              const Text("/", style: TextStyle(color: AppTheme.surfaceBorder)),
+                              const SizedBox(width: 8),
+                              Text(
+                                state.selectedProject?.title ?? "Studio Projects",
+                                style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text("/", style: TextStyle(color: AppTheme.surfaceBorder)),
+                              const SizedBox(width: 8),
+                              Text(
+                                _getTabTitle(state.activeTab),
+                                style: const TextStyle(color: AppTheme.goldPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          const Text("/", style: TextStyle(color: AppTheme.surfaceBorder)),
-                          const SizedBox(width: 8),
-                          Text(
-                            _getTabTitle(state.activeTab),
-                            style: const TextStyle(color: AppTheme.goldPrimary, fontSize: 13, fontWeight: FontWeight.w600),
-                          ),
-                        ],
+                        ),
                       ),
 
-                      const Spacer(),
+                      const SizedBox(width: 12),
 
                       // Interactive Role Switcher Dropdown
                       Container(

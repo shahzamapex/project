@@ -95,19 +95,24 @@ Skyline Penthouse 42 - Calacatta & Walnut Execution
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 8,
                     children: [
                       const Text(
                         "OCR Task Automation Module",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.textLight),
                       ),
-                      const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -116,13 +121,14 @@ Skyline Penthouse 42 - Calacatta & Walnut Execution
                           border: Border.all(color: AppTheme.goldPrimary),
                         ),
                         child: const Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.smart_toy_outlined, size: 14, color: AppTheme.goldPrimary),
                             SizedBox(width: 6),
                             Text("TESSERACT OCR INTEGRATION", style: TextStyle(color: AppTheme.goldPrimary, fontSize: 11, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -185,8 +191,10 @@ Skyline Penthouse 42 - Calacatta & Walnut Execution
                       style: const TextStyle(color: AppTheme.goldPrimary, fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ] else ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 14,
+                      runSpacing: 10,
                       children: [
                         ElevatedButton.icon(
                           onPressed: () => _pickAndProcessFile(state),
@@ -194,7 +202,6 @@ Skyline Penthouse 42 - Calacatta & Walnut Execution
                           label: const Text("Select Document to Scan"),
                           style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16)),
                         ),
-                        const SizedBox(width: 14),
                         OutlinedButton.icon(
                           onPressed: () => _runSampleDocument(state),
                           icon: const Icon(Icons.science_outlined, size: 16),
@@ -223,16 +230,24 @@ Skyline Penthouse 42 - Calacatta & Walnut Execution
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 8,
                     children: [
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.check_circle, color: AppTheme.emeraldSuccess, size: 20),
                           const SizedBox(width: 10),
-                          Text(
-                            "OCR Structured Results: ${_ocrResult!['document_name']}",
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textLight),
+                          Flexible(
+                            child: Text(
+                              "OCR Structured Results: ${_ocrResult!['document_name']}",
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textLight),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
@@ -269,57 +284,76 @@ Skyline Penthouse 42 - Calacatta & Walnut Execution
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: AppTheme.surfaceBorder),
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: AppTheme.goldPrimary.withOpacity(0.15),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Text("${index + 1}", style: const TextStyle(color: AppTheme.goldPrimary, fontWeight: FontWeight.bold, fontSize: 11)),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(t['title'] ?? 'Task', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textLight)),
-                                  const SizedBox(height: 2),
-                                  Text(t['description'] ?? '', style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                "Planned: ${t['planned_days']} days",
-                                style: const TextStyle(fontSize: 12, color: AppTheme.textLight),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                "Due: ${t['due_date']}",
-                                style: const TextStyle(fontSize: 12, color: AppTheme.goldPrimary, fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            StatusBadge(label: t['priority'] ?? 'Medium', type: "priority"),
-                          ],
+                        child: LayoutBuilder(
+                          builder: (context, taskConstraints) {
+                            final taskRow = Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.goldPrimary.withOpacity(0.15),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text("${index + 1}", style: const TextStyle(color: AppTheme.goldPrimary, fontWeight: FontWeight.bold, fontSize: 11)),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(t['title'] ?? 'Task', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textLight), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      const SizedBox(height: 2),
+                                      Text(t['description'] ?? '', style: const TextStyle(fontSize: 11, color: AppTheme.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    "Planned: ${t['planned_days']} days",
+                                    style: const TextStyle(fontSize: 12, color: AppTheme.textLight),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    "Due: ${t['due_date']}",
+                                    style: const TextStyle(fontSize: 12, color: AppTheme.goldPrimary, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                StatusBadge(label: t['priority'] ?? 'Medium', type: "priority"),
+                              ],
+                            );
+
+                            if (taskConstraints.maxWidth < 650) {
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(minWidth: 650),
+                                  child: taskRow,
+                                ),
+                              );
+                            }
+                            return taskRow;
+                          },
                         ),
                       );
                     },
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Wrap(
+                    alignment: WrapAlignment.end,
+                    spacing: 12,
+                    runSpacing: 8,
                     children: [
                       OutlinedButton(
                         onPressed: () => state.setActiveTab(AppTab.dashboard),
                         child: const Text("Go to Task List"),
                       ),
-                      const SizedBox(width: 12),
                       ElevatedButton.icon(
                         onPressed: () => state.setActiveTab(AppTab.aiAnalytics),
                         icon: const Icon(Icons.auto_awesome, size: 16),
