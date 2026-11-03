@@ -12,7 +12,7 @@ import '../models/material_requirement_model.dart';
 class ApiService {
   static String baseUrl = const String.fromEnvironment(
     'BACKEND_URL',
-    defaultValue: "http://localhost:8000/api",
+    defaultValue: "https://backend-orpin-delta-43.vercel.app/api",
   );
   String? authToken;
 
