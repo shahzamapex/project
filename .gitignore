@@ -20,3 +20,4 @@ backend/.vercel/
 .env
 .DS_Store
 Thumbs.db
+.sf/
