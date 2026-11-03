@@ -434,6 +434,15 @@ class SupabaseService:
 
         self.dispatched_emails = []
 
+    def _log_notice(self, method_name: str, table_name: str, error: Any):
+        err_str = str(error)
+        if "PGRST205" in err_str:
+            if not getattr(self, f"_warned_{table_name}", False):
+                setattr(self, f"_warned_{table_name}", True)
+                print(f"[Supabase Info] Table '{table_name}' not yet created in PostgreSQL (PGRST205). Serving from resilient local mock store. Run backend/database/schema.sql in Supabase SQL Editor to sync live tables.")
+        else:
+            print(f"[Supabase] {method_name} notice: {error}")
+
     # Supabase table helper methods
     def get_projects(self) -> List[Dict[str, Any]]:
         if self.is_connected and self.client:
@@ -442,7 +451,7 @@ class SupabaseService:
                 if res.data:
                     return res.data
             except Exception as e:
-                print(f"[Supabase] get_projects query notice: {e}")
+                self._log_notice("get_projects", "projects", e)
         return self.projects
 
     def get_project_by_id(self, project_id: str) -> Optional[Dict[str, Any]]:
@@ -452,7 +461,7 @@ class SupabaseService:
                 if res.data:
                     return res.data[0]
             except Exception as e:
-                print(f"[Supabase] get_project_by_id query notice: {e}")
+                self._log_notice("get_project_by_id", "projects", e)
         return next((p for p in self.projects if p["id"] == project_id), None)
 
     def create_project(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -464,7 +473,7 @@ class SupabaseService:
                 if res.data:
                     return res.data[0]
             except Exception as e:
-                print(f"[Supabase] create_project query notice: {e}")
+                self._log_notice("create_project", "projects", e)
         self.projects.append(data)
         return data
 
@@ -475,7 +484,7 @@ class SupabaseService:
                 if res.data:
                     return res.data[0]
             except Exception as e:
-                print(f"[Supabase] update_project query notice: {e}")
+                self._log_notice("update_project", "projects", e)
         proj = self.get_project_by_id(project_id)
         if proj:
             proj.update(updates)
@@ -491,7 +500,7 @@ class SupabaseService:
                 if res.data:
                     return res.data
             except Exception as e:
-                print(f"[Supabase] get_tasks query notice: {e}")
+                self._log_notice("get_tasks", "tasks", e)
         if project_id:
             return [t for t in self.tasks if t["project_id"] == project_id]
         return self.tasks
@@ -503,7 +512,7 @@ class SupabaseService:
                 if res.data:
                     return res.data[0]
             except Exception as e:
-                print(f"[Supabase] get_task_by_id query notice: {e}")
+                self._log_notice("get_task_by_id", "tasks", e)
         return next((t for t in self.tasks if t["id"] == task_id), None)
 
     def create_task(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -516,7 +525,7 @@ class SupabaseService:
                 if res.data:
                     return res.data[0]
             except Exception as e:
-                print(f"[Supabase] create_task query notice: {e}")
+                self._log_notice("create_task", "tasks", e)
         self.tasks.append(data)
         return data
 
@@ -527,7 +536,7 @@ class SupabaseService:
                 if res.data:
                     return res.data[0]
             except Exception as e:
-                print(f"[Supabase] update_task query notice: {e}")
+                self._log_notice("update_task", "tasks", e)
         task = self.get_task_by_id(task_id)
         if task:
             task.update(updates)

@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
@@ -6,9 +7,12 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingClassifier
 from sklearn.preprocessing import StandardScaler
 from database.supabase_client import db_service
 
+# Disable multiprocessing in serverless environments to avoid /dev/shm warning
+os.environ["JOBLIB_MULTIPROCESSING"] = "0"
+
 class AIPredictiveAnalyticsEngine:
     def __init__(self):
-        self.regressor = RandomForestRegressor(n_estimators=60, random_state=42)
+        self.regressor = RandomForestRegressor(n_estimators=60, random_state=42, n_jobs=1)
         self.classifier = GradientBoostingClassifier(n_estimators=50, random_state=42)
         self.scaler = StandardScaler()
         self.is_trained = False

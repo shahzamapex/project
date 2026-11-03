@@ -1,7 +1,10 @@
 import io
 import re
 import os
-import fitz  # PyMuPDF
+try:
+    import pymupdf as fitz
+except ImportError:
+    import fitz
 from PIL import Image
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
